@@ -1,0 +1,22 @@
+{
+  "name": "graphql-api",
+  "version": "1.0.0",
+  "description": "Setting up a GraphQL API with Apollo",
+  "author": "Hess <hessro@oregonstate.edu>",
+  "license": "MIT",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "mongodb": "^6.7.0",
+    "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.2"
+  }
+}
