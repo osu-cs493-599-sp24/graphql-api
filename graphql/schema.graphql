@@ -1,0 +1,24 @@
+type User {
+  id: ID!
+  name: String!
+  email: String!
+  lodgings: [Lodging!]!
+  reservation: [Reservation!]!
+}
+
+type Lodging {
+  id: ID!
+  name: String!
+  description: String!
+  price: Float!
+  reservations: [Reservation!]!
+  owner: User!
+}
+
+type Reservation {
+  id: ID!
+  start: String!
+  end: String!
+  lodging: Lodging!
+  user: User!
+}
