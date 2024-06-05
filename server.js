@@ -7,12 +7,21 @@
 require('dotenv').config()
 const express = require('express')
 const morgan = require('morgan')
+const gql = require("graphql-tag")
+const { readFileSync } = require("node:fs")
+const { ApolloServer } = require("@apollo/server")
+const { expressMiddleware } = require("@apollo/server/express4")
 
 const api = require('./api')
 const { connectToDb } = require('./lib/mongodb')
+const resolvers = require("./graphql/resolvers")
 
 const app = express()
 const port = process.env.PORT || 8000
+
+const schema = readFileSync("./graphql/schema.graphql", "utf-8")
+const typeDefs = gql(schema)
+const apolloServer = new ApolloServer({ typeDefs, resolvers })
 
 /*
  * Use the popular logger Morgan: https://github.com/expressjs/morgan.
@@ -26,25 +35,29 @@ app.use(express.json())
  */
 app.use('/', api)
 
-app.use('*', function (req, res, next) {
-    res.status(404).send({
-        err: "This URL was not recognized: " + req.originalUrl
-    })
-})
+apolloServer.start().then(function () {
+    app.use("/graphql", expressMiddleware(apolloServer))
 
-/*
- * This route will catch any errors thrown from our API endpoints and return
- * a response with a 500 status to the client.
- */
-app.use('*', function (err, req, res, next) {
-    console.error("== Error:", err)
-    res.status(500).send({
-        err: "Server error.  Please try again later."
+    app.use('*', function (req, res, next) {
+        res.status(404).send({
+            err: "This URL was not recognized: " + req.originalUrl
+        })
     })
-})
 
-connectToDb().then(function () {
-    app.listen(port, function () {
-        console.log("== Server is listening on port:", port)
+    /*
+     * This route will catch any errors thrown from our API endpoints and return
+     * a response with a 500 status to the client.
+     */
+    app.use('*', function (err, req, res, next) {
+        console.error("== Error:", err)
+        res.status(500).send({
+            err: "Server error.  Please try again later."
+        })
+    })
+
+    connectToDb().then(function () {
+        app.listen(port, function () {
+            console.log("== Server is listening on port:", port)
+        })
     })
 })

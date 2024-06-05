@@ -22,3 +22,19 @@ type Reservation {
   lodging: Lodging!
   user: User!
 }
+
+type Query {
+  lodgings: [Lodging!]!
+  lodging(id: ID!): Lodging
+  reservation(id: ID!): Reservation
+  user(id: ID!): User
+}
+
+type Mutation {
+  createReservation(
+    start: String!,
+    end: String!,
+    userId: ID!,
+    lodgingId: ID!
+  ) : Reservation
+}
